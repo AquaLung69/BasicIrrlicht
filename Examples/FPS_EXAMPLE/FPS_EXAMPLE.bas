@@ -7,7 +7,7 @@
 '	`-`-' - '`-' - '`----`-`----`-' `-' `-'
 '----------------------------------------------------------------------------
 '  FPS EXAMPLE Author 2024 ED MUSOLINO
-'	Basic-Irrlicht Wrapper by EM ENGINEERING LLC ©2019-2026
+'	Basic-Irrlicht Wrapper by EM ENGINEERING LLC Â©2019-2026
 '----------------------------------------------------------------------------
 ' This software is provided 'as - is', without any express Or implied
 ' warranty.  In no event will the author(s) be held liable For any damages
@@ -41,7 +41,7 @@
 '-----------------------------------------------------------------------------
 '	INCLUDE THE BASIC IRRLICHT LIBRARY & OTHERS
 '-----------------------------------------------------------------------------
-#include once "../BASE_LIBS/BasicIrrlicht.bi"
+#include once "../../LIBS/BasicIrrlicht.bi"
 #include once "INCLUDES/NET_MSG_DEFS.bi"
 
 ' USEFULL COMMAND
@@ -109,7 +109,7 @@ Dim Shared ServerName As String
 Dim Shared MaxPlayers As Integer
 	MaxPlayers = 10
 Dim Shared IP As String
-	IP = "127.0.0.1" 				'TEST, GET FROM GUI
+	IP = "gamme.scud-online.net" 				'TEST, GET FROM GUI
 Dim Shared Server_Port As Integer
 	Server_Port = 5009
 
