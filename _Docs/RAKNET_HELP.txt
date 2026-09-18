@@ -1,0 +1,187 @@
+----------------------------------------------------------
+* Remember when retrieving data from a message, it must be
+  done in the same order that is was sent else you WILL get
+  corrupt data!!! There is NO error checking for this!
+----------------------------------------------------------
+
+Example
+SENDING SIDE.....
+iRN_SendByte( ID_CHAT )
+iRN_SendInt( 999 )
+iRN_SendString( "SERVER" )
+iRN_SendString( "BROADCAST MESSAGE" )
+iRN_SendMessage( RN_BROADCAST, RN_MEDIUM_PRIORITY, RN_RELIABLE, 0, True )
+
+RECEIVING SIDE.....
+mymsg AS UBYTE = iRN_GetByte()
+myint AS INTEGER = iRN_GetInt()
+mystring1 AS STRING = *iRN_GetString()
+mystring2 AS STRING = *iRN_GetString()
+----------------------------------------------------------
+
+
+CURRENT BasicIrrlicht.dll COMMANDS
+
+"iRN_Version" () as ZString ptr
+- Returns the Raknet Version
+
+"iRN_Init" () as Integer
+- Initializes Raknet, needed for both Server and Client.
+Returns TRUE or FALSE.
+
+"iRN_StartServer" (byval maxConnections as UInteger,byval localPort as UInteger,byval password as ZString ptr=NULL) as Integer
+- Attempt to start as Server
+Returns TRUE or FALSE. Will return -1 if Raknet itself fails to startup Server.
+
+"iRN_StartClient" () as Integer
+- Attempt to start as client
+Returns TRUE or FALSE. Will return -1 if Raknet itself fails to startup Client.
+
+"iRN_Connect" (byval host as ZString ptr,byval remotePort as UInteger,byval password as ZString ptr=NULL, byval blocking as Boolean=false) as Integer
+- For Client, attempts to connect to a server, if blocking is TRUE, program will wait for connection message else you must process yourself
+Returns TRUE or FALSE, if blocking is FALSE, this will return TRUE always
+
+"iRN_CloseConnection" (byval notify as Boolean=true) as boolean
+- For Client, closes current connection
+Returns TRUE or FALSE.
+
+"iRN_Shutdown" (byval waitTimeMS as uInteger) as boolean
+- Shutdown Raknet
+Returns TRUE or FALSE.
+
+"iRN_CheckMessages" () as boolean
+- Check Message Queue, returns True if messages are waiting.
+Returns TRUE or FALSE.
+
+"iRN_ClearMessage" () as boolean
+- Clears the current Message from the receive queue
+Returns TRUE or FALSE.
+
+"iRN_ForwardMessage" () as Boolean
+- For Server only, forwards a received Message
+Returns TRUE or FALSE.
+
+"iRN_DisconnectPlayer" (byval playerID as Integer,byval notify as Boolean=true) as boolean
+- For Server only, disconnects a player
+Returns TRUE or FALSE.
+
+"iRN_GetMyIP" () as String
+- Returns IP Address.
+
+"iRN_GetMyGUID" () as String
+- Returns Raknet internal GUID.
+
+"iRN_GetMyID" () as Integer
+- Returns Player ID for current Message
+
+"iRN_GetPlayerID" () as Integer
+- For Server only, returns Player ID for current Message
+Returns 1 or greater for player ID or FALSE for failure
+
+"iRN_GetDisconnectID" () as Integer
+- For Server only, returns Player ID for last player disconnect
+
+"iRN_GetTotalConnections" () as UInteger
+- For Server only, returns current connected player count
+Returns current total connections.
+
+"iRN_GetTime" () as Integer
+- Returns Raknet internal clock
+
+"iRN_Active" () as Boolean
+- Returns if Raknet is currently initialized
+Returns TRUE or FALSE
+
+"iRN_PingHost" (byval host as ZString ptr,byval remotePort as UInteger) as Integer
+- Not completed yet
+
+"iRN_GetAveragePing" (byval playerID as Integer) as Integer
+- For Server only, returns average ping for specified player
+
+"iRN_GetLastPing" (byval playerID as Integer) as Integer
+- For Server only, returns last ping for specified player
+
+"iRN_GetLowestPing" (byval playerID as Integer) as Integer
+- For Server only, returns specified players lowest ping
+
+"iRN_AddToBanList" (byval ip as ZString ptr,byval milliseconds as Integer=60000)
+- For Server only, Adds an IP Address to the BAN LIST
+
+"iRN_RemoveFromBanList" (byval ip as ZString ptr)
+- For Server only, removes and IP Address from the BAN LIST
+
+"iRN_ClearBanList" ()
+- For Server only, clears the internal BAN LIST
+
+"iRN_IsBanned" (byval ip as ZString ptr) as Boolean
+- For Server only, check if a specific IP Address is currently BANNED
+Returns TRUE or FALSE
+
+"iRN_SendMessage" (byval playerID as Integer,byval priority as Integer,byval reliability as Integer, _
+				byval orderingChannel as Integer=0,byval broadcast as Boolean=true) as Integer
+- Send current message
+Returns Raknet's Result.
+
+
+ADD Data to outgoing message
+
+"iRN_SendTimeStamp" ()
+- Add this immediately after Message Type (RN_SendByte) when you want a timestamped message
+
+"iRN_SendByte" (byval bValue as uByte)
+- Send Byte Data
+
+"iRN_SendInt" (byval iValue as integer)
+- Send integer data
+
+"iRN_SendFloat" (byval fValue as Single)
+- Send float data
+
+"iRN_SendString" (byval sValue as zstring ptr)
+- Send a string of data (* Max length of 254)
+
+
+
+GET Data from incoming message
+
+"iRN_GetTimeStamp" () as integer
+- Returns translated timestamp of current message, this is cleard with the message (RN_ClearMessage)
+
+"iRN_GetByte" () as uByte
+- Returns a Byte of data from current message
+
+"iRN_GetInt" () as Integer
+- Returns an Integer of data from current message
+
+"iRN_GetFloat" () as Single
+- Returns a float of data from current message
+
+"iRN_GetString" () as ZString ptr
+- Returns a String of data from current message
+
+
+
+SPLINE Handling
+
+"iCreateSpline" () as uinteger
+
+"iFreeSpline" (byval splineID as UInteger) as boolean
+
+"iGetSplineX" (byval splineID as uinteger,byval timeMS as Single) as Single
+
+"iGetSplineY" (byval splineID as uinteger,byval timeMS as Single) as Single
+
+"iGetSplineZ" (byval splineID as uinteger,byval timeMS as Single) as Single
+
+"iInit2DSpline" (byval splineID as UInteger,byval StartX as Single,byval StartY as Single,byval Ctrl1X as Single, _
+				byval Ctrl1Y as Single,byval Ctrl2X as Single,byval Ctrl2Y as Single,byval EndX as Single,byval EndY as Single)
+
+"iInit3DSpline" (byval SplineID as UInteger,byval StartX as Single,byval StartY as Single,byval StartZ as Single, _
+      byval Ctrl1X as Single,byval Ctrl1Y as Single,byval Ctrl1Z as Single,byval Ctrl2X as Single,byval Ctrl2Y as Single,byval Ctrl2Z as Single, _
+      byval EndX as Single,byval EndY as Single,byval EndZ as Single)
+
+"iExtrapolatePoint" (byval timeMS as single,byval initPos as Single,byval vel as Single,byval accel as Single=0, _
+      byval maxvel as Single=0) as Single
+
+"iGetTotalSplines" () as UInteger
+
