@@ -109,7 +109,7 @@ Dim Shared ServerName As String
 Dim Shared MaxPlayers As Integer
 	MaxPlayers = 10
 Dim Shared IP As String
-	IP = "gamme.scud-online.net" 				'TEST, GET FROM GUI
+	IP = "game.scud-online.net" 				'TEST, GET FROM GUI
 Dim Shared Server_Port As Integer
 	Server_Port = 5009
 
