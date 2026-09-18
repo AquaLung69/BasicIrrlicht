@@ -3,6 +3,8 @@
 FPS EXAMPLE
 <img src="https://i.postimg.cc/26d9bgZb/FPSExample-Thumb.jpg)))" alt="Project Screenshot" width="500">
 
+<img src="https://i.postimg.cc/pLwC1Cn2/FPS-EXAMPLE-02.jpg">
+
 BasicIrrlicht.dll is a wrapper for use with FreeBasic and limited testing
 with Python.  Currently the Wrapper is 32 bit only and therefore requires
 a 32 bit compiler (Freebasic or Python).
