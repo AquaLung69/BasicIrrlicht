@@ -7,7 +7,7 @@
 '	`-`-' - '`-' - '`----`-`----`-' `-' `-'
 '----------------------------------------------------------------------------
 '  FPS EXAMPLE Author 2024 ED MUSOLINO
-'	Basic-Irrlicht Wrapper by EM ENGINEERING LLC Â©2019-2026
+'	Basic-Irrlicht Wrapper by EM ENGINEERING LLC ©2019-2026
 '----------------------------------------------------------------------------
 ' This software is provided 'as - is', without any express Or implied
 ' warranty.  In no event will the author(s) be held liable For any damages
@@ -41,13 +41,17 @@
 '-----------------------------------------------------------------------------
 '	INCLUDE THE BASIC IRRLICHT LIBRARY & OTHERS
 '-----------------------------------------------------------------------------
-#include once "../../LIBS/BasicIrrlicht.bi"
+#include once "../BASE_LIBS/BasicIrrlicht.bi"
 #include once "INCLUDES/NET_MSG_DEFS.bi"
 
 ' USEFULL COMMAND
 ' iEntityDebug( ENTITY, EDS_BBOX )
 ' iNormalMapTexture( buildTex, 9.0 )
 ' iSaveTexture( buildTex, "Media/GFX/BuildingD3.bmp" )
+'
+'	dim ConvTex as iTEXTURE = iLoadTexture( "Media/GFX/glassb.jpg" )
+'	iNormalMapTexture( ConvTex, 9.0 )
+'	iSaveTexture( ConvTex, "Media/GFX/ConvTex.bmp" )
 
 '-----------------------------------------------------------------------------
 '	CONSTANTS
@@ -98,18 +102,13 @@ const target_BUILDING		= 4
 const MAX_NETMSG_PER_CYCLE = 200				'NETWORK MESSAGES PROCESSED PER ENGINE CYCLE
 const SND_DISTANCE			= 50.0
 
-'DIM Name_Height as single = 35
-'	IrrGetScreenCoordinatesFrom3DPosition( x, y, Name_Height )
-'	iText( nax-15, nay-8, "MY NAME" )	'Irr2DFontDraw ( BitmapFont, "ZUMLIN", x-15, y-8, x+35, y )
-	
-	
 Dim Shared Is_Server As Boolean = False
 Dim Shared ServerName As String
 	ServerName = "SKYSCRAPER_SERVER"
 Dim Shared MaxPlayers As Integer
 	MaxPlayers = 10
 Dim Shared IP As String
-	IP = "game.scud-online.net" 				'TEST, GET FROM GUI
+	IP = "127.0.0.1" 				'TEST, GET FROM GUI
 Dim Shared Server_Port As Integer
 	Server_Port = 5009
 
@@ -118,7 +117,6 @@ Dim Shared MAP_SEGMENTS As Integer 	= 200
 Dim Shared BUILDING_COUNT As Integer
 	BUILDING_COUNT = (MAP_SIZE/MAP_SEGMENTS) * 2
 'IF BUILDING_COUNT > (MAP_SIZE/MAP_SEGMENTS) * 2 THEN BUILDING_COUNT = (MAP_SIZE/MAP_SEGMENTS) * 2
-
 
 '-----------------------------------------------------------------------------
 '	CUSTOM TYPES
@@ -286,9 +284,6 @@ iAppTitle( "FPS EXAMPLE 'SKY SCRAPER' ( BASIC IRRLICHT MULTIPLAYER FPS )  AUTHOR
 'iDopplerEffect( 1.0, 1000 )
 iSetLogLevel( ELL_DEBUG )
 
-'dim ConvTex as iTEXTURE = iLoadTexture( "Media/GFX/glassb.jpg" )
-'iNormalMapTexture( ConvTex, 9.0 )
-'iSaveTexture( ConvTex, "Media/GFX/ConvTex.bmp" )
 '-----------------------------------------------------------------------------
 '	FONT
 '-----------------------------------------------------------------------------
@@ -364,7 +359,6 @@ Dim Shared face As iTEXTURE
 Dim Shared teleport_delay_TIMER As Integer
 	teleport_delay_TIMER = iMilliSecs()		'250
 
-dim shared tex_Combined as iTEXTURE
 dim shared as iTEXTURE tex_FaceMaster
 	tex_FaceMaster = iLoadTexture( "MEDIA/GFX/Face2.bmp")
 dim shared Scarring( 5 ) as iTEXTURE
@@ -501,7 +495,6 @@ iMoveEntity( targetEnt, 0, 0, GUN_RANGE )				'GUN MAX RANGE
 '	*Must be here because of some global dependencies above
 '-----------------------------------------------------------------------------
 #include once "INCLUDES/FPS_GUI.bi"
-
 
 '-----------------------------------------------------------------------------
 '	PRE-CACHE MODEL CREATION TO PREVENT IN-GAME SLOWNESS WHEN JOINING
@@ -849,8 +842,6 @@ WHILE iRun() AND ( NOT ExitApp )
 				rp = iRand(1,4)
 				.X = iEntityX( Portal( rp ) )
 				.Z = iEntityZ( Portal( rp ) )
-				'iHideEntity( .pEnt )
-				'iEntityParent( .pEnt, Camera )
             iRotateEntity( .pEnt, 0, 0, 0 )
             iPositionEntity( .pEnt, 0, 0, 0 )
 				iPositionEntity( Camera, .X, .Y, .Z, true )
@@ -865,7 +856,6 @@ WHILE iRun() AND ( NOT ExitApp )
                iFadeIn( 2000 )
 				end if
 				teleport_delay_TIMER = iMilliSecs()
-				'iShowEntity( .pEnt )
             .pCartridge = MAX_AMMO_CARTRIDGE
             .pAmmoBelt = MAX_AMMO
             .pHealth = MAX_HEALTH
@@ -972,8 +962,6 @@ WHILE iRun() AND ( NOT ExitApp )
 		iShowEntity( Flare )
 	End If
 
-
-
    
 '-----------------------------------------------------------------------------
    iUpdateScene()	
@@ -1071,32 +1059,6 @@ WHILE iRun() AND ( NOT ExitApp )
 		iText( GFX_WIDTH/2, 100, "H E A D   S H O T ! !", True )
 	End If
 
-	
-'TEST
-'   If iKeyHit( KEY_8 ) Then
-'      Is_Server = False
-'      ADD_PLAYER( "RAND"+Str(iRAND(100,999)), 20, 1 )
-'      Is_Server = True
-'      With T_PLAYER_LIST( 20 )
-'         .PacketX = .X
-'         .PacketY = .Y
-'         .PacketZ = .Z
-'         .LastPacketTimestamp = iMilliSecs()
-'         Sleep( 50 )
-'      End With
-'   End If
-'   If iKeyHit( KEY_9 ) Then
-'      T_PLAYER_LIST( 20 ).pState = SLOT_DEAD
-'      DEATH( 20, 0 )
-'   End If
-
-
-'	if iKeyHit( KEY_UP ) then bpos += 1
-'	if iKeyHit( KEY_DOWN ) then bpos -= 1
-'	with T_BUIDLING_LIST( 1 )
-'		iPositionEntity( .Ent, iEntityX( .Ent ), bpos, iEntityZ( .Ent ) )
-'	end with
-	
 '-----------------------------------------------------------------------------   
 	iRenderGUI()   'REQUIRED TO RENDER SCREEN FADER AND GUI ELEMENTS
    iFlip()
@@ -1439,7 +1401,6 @@ SUB CREATE_EXPLOSION( x AS SINGLE, y AS SINGLE, z AS SINGLE, tType as integer )
 					exit select
 				
 				case target_BUILDING		'WALL
-					'iEmitSound( snd_Ricochet, .Emitter )
 					iSetSoundDistance( iEmitSound( snd_Ricochet, .Emitter ), SND_DISTANCE )
 					' SMOKE PARTICLES
 					DIM smokePS AS iPARTICLE_SYSTEM
@@ -1471,7 +1432,6 @@ SUB CREATE_EXPLOSION( x AS SINGLE, y AS SINGLE, z AS SINGLE, tType as integer )
 
 				case target_PLAYER, target_PLAYER_HEAD
 					iHideEntity( .Sprite )
-					'iEmitSound( snd_Flesh, .Emitter )
 					iSetSoundDistance( iEmitSound( snd_Flesh, .Emitter ), SND_DISTANCE )
 					' BLOOD PARTICLES
 					DIM bloodPS AS iPARTICLE_SYSTEM
@@ -1674,7 +1634,6 @@ SUB FIRE_WEAPON( pid as integer, Obj as iENTITY )
 					TargetType = target_PLAYER_HEAD
 				end if
 				HitPid = .pid
-				'iEmitSound( snd_HurtM( iRAND(1,2) ), .pEnt )
 				iSetSoundDistance( iEmitSound( snd_HurtM( iRAND(1,2) ), .pEnt ), SND_DISTANCE )
 				EXIT FOR
 			END IF                     
@@ -1711,11 +1670,11 @@ SUB FIRE_WEAPON( pid as integer, Obj as iENTITY )
 						if .pArmor > 0 and iRAND(1,5) > 2 then
 							DamageA = -5
 							.pArmor += DamageA
-							print "ARMOR CALC (GF): "+str( .pArmor )
+							'print "ARMOR CALC (GF): "+str( .pArmor )
 						else
 							DamageH = -2 * TargetType	'??
 							.pHealth += DamageH
-							print "HEALTH CALC (GF): "+str( .pHealth )
+							'print "HEALTH CALC (GF): "+str( .pHealth )
 						end if
 
 						IF .pArmor < 1 THEN
@@ -1726,7 +1685,7 @@ SUB FIRE_WEAPON( pid as integer, Obj as iENTITY )
 							'.pDeaths += 1
 							T_PLAYER_LIST( 0 ).pKills += 1
 							' SEND DEATH
-							print "DEATH SENT (GF)..."
+							'print "DEATH SENT (GF)..."
 							iRN_SendByte( NET_DEATH )
 							iRN_SendInt( HitPid )
 							iRN_SendInt( pid )
@@ -1734,29 +1693,10 @@ SUB FIRE_WEAPON( pid as integer, Obj as iENTITY )
 							DEATH( HitPid, pid )
 						end if
 						
-						dim Scarr_Stage as integer = 0
-						dim tex_Combined as iTEXTURE
-						select case .pHealth
-							case 90 to 100
-								Scarr_Stage = 0
-							case 70 to 89
-								Scarr_Stage = 1
-							case 50 to 69
-								Scarr_Stage = 2
-							case 30 to 49
-								Scarr_Stage = 3
-							case 0 to 29
-								Scarr_Stage = 4
-						end select
-						print "Scarr_Stage_Sent: "+str( Scarr_Stage )
-						
-						tex_Combined = iCopyTexture( tex_FaceMaster )
-						iTextureBlend( tex_Combined, Scarring( Scarr_Stage ), 0, 0, 3 )
-						iEntityTexture( .pHead, tex_Combined, 0 )
-						iEntityTexture( .pBody, Scarring( Scarr_Stage ), 0 )
+						UPDATE_SCARRS( .pid )
 
 						' SEND DAMAGE
-						print "DAMAGE SENT (GF)..."
+						'print "DAMAGE SENT (GF)..."
 						iRN_SendByte( NET_DAMAGE )
 						iRN_SendInt( pid )
 						iRN_SendInt( HitPid )
@@ -1796,7 +1736,6 @@ SUB DEATH( death_pid as integer, killedby_pid as integer )
 				T_DEATH_LIST( T_DEATH_TOTAL ).dtimer = iMilliSecs()   '4000
 				if kp <> -1 then
 					ADD_CHAT( "SERVER", .pName + " killed by "+T_PLAYER_LIST( kp ).pName+"!", 2 )
-					'T_PLAYER_LIST( kp ).pKills += 1
 				end if
 				.SplineInitialized = false
 			END WITH
@@ -1818,18 +1757,11 @@ SUB UPDATE_DEATH()
                .pid = -1
                .dtimer = EMPTY_TIMER
 					
-					
 					if T_PLAYER_LIST( p ).pid <> T_PLAYER_LIST( 0 ).pid then
 						iRotateEntity( T_PLAYER_LIST( p ).pEnt, 0, 0, 0 )
 						iPositionEntity( T_PLAYER_LIST( p ).pEnt, T_PLAYER_LIST( p ).X, T_PLAYER_LIST( p ).Y, T_PLAYER_LIST( p ).Z )
 						iHideEntity( T_PLAYER_LIST( p ).pEnt )
-					'else
-					'	iRotateEntity( T_PLAYER_LIST( p ).pEnt, 0, 0, 0 )
-					'	iPositionEntity( T_PLAYER_LIST( p ).pEnt, 0, 0, 0 )
 					end if
-					'iHideEntity( T_PLAYER_LIST( p ).pEnt )
-					'T_PLAYER_LIST( p ).pState = SLOT_ALIVE						'TESTING
-					
 					
 					swap T_DEATH_LIST( p ), T_DEATH_LIST( T_DEATH_TOTAL )
 					T_DEATH_TOTAL -= 1
@@ -1876,13 +1808,13 @@ SUB DRAW_CHAT()
          ' DRAW MESSAGE
 			select case T_CHAT_LIST( T_CHAT_TOTAL - counter ).msgType
 				case 1
-					iColor( 255, 255, 255, 225 )	'white
+					iColor( 255, 255, 255, 225 )		'white
 				case 2
 					iColor( 255, 155, 180, 225 )		'red
 				case 3
-					iColor( 0, 255, 0, 225 )		'green
+					iColor( 0, 255, 0, 225 )			'green
 				case 4
-					iColor( 0, 162, 232, 225 )		'blue
+					iColor( 0, 162, 232, 225 )			'blue
 			end select
          iText( 11, (GFX_HEIGHT-36) - (counter * 15), Chat )
          counter += 1
@@ -1939,6 +1871,7 @@ FUNCTION INITIALIZE_NETWORK() AS Boolean
             IP = *iRN_GetMyIP()
             PRINT( "Server Started Successfully." )
             PRINT( "Listening for connections on: IP: "+IP+" PORT: "+STR(Server_Port) )
+				iPlayMusic( "Media/SFX/ServerRunning.ogg" )
             RETURN( True )
          ELSEIF result = 0 THEN
             PRINT( "Could not start the Server!" )
@@ -1994,14 +1927,13 @@ SUB MAIN_MENU()
 	next i
    iMasterVolume( 1 )
    DIM MenuCam AS iENTITY = iCreateCamera()
-	'iPositionEntity( MenuCam, 0, 30, 0 )
-	'iRotateEntity( MenuCam, 100, 0, -40 )
    DIM AVATAR_PIVOT AS iENTITY = iCreatePivot()
    dim as T_PLAYER AVATAR
    CREATE_MODEL( AVATAR, false )
    iEntityParent( AVATAR.pEnt, AVATAR_PIVOT )
 	iRotateEntity( AVATAR.pFeet, -180, 0, 0 )
    iPositionEntity( AVATAR_PIVOT, 0, -1, 40 ) '0, -1, 40 )
+	dim tex_Combined as iTEXTURE
 
    ' PLATFORM
    dim PlatformBase as iEntity = iCreateCylinder(16)
@@ -2126,29 +2058,7 @@ SUB MAIN_MENU()
 			iFlushMouse()
       end if
 
-		' TEST
-		If iKeyHit( KEY_6 ) Then
-			print( "PORT: "+*iGetElementText( ID_EDIT_PORT_J ) )
-		end if
 
-	if iKeyHit( KEY_O ) then
-		Scarr_Stage += 1
-		if Scarr_Stage > 4 then Scarr_Stage = 4
-		tex_Combined = iCopyTexture( tex_FaceMaster )
-		iTextureBlend( tex_Combined, Scarring( Scarr_Stage ), 0, 0, 3 )
-		iEntityTexture( AVATAR.pHead, tex_Combined, 0 )
-		iEntityTexture( AVATAR.pBody, Scarring( Scarr_Stage ), 0 )
-	end if
-	if iKeyHit( KEY_P ) then
-		Scarr_Stage -= 1
-		if Scarr_Stage < 0 then Scarr_Stage = 0
-		tex_Combined = iCopyTexture( tex_FaceMaster )
-		iTextureBlend( tex_Combined, Scarring( Scarr_Stage ), 0, 0, 3 )
-		iEntityTexture( AVATAR.pHead, tex_Combined, 0 )
-		iEntityTexture( AVATAR.pBody, Scarring( Scarr_Stage ), 0 )
-	end if
-	
-	
       iRenderGUI()
 		PROCESS_GUI_MENU()
 		iEntityColor( AVATAR.pHead, 255-GUI_LIST_HEAD( 1 ), 255-GUI_LIST_HEAD( 2 ), 255-GUI_LIST_HEAD( 3 ) )
@@ -2453,22 +2363,16 @@ SUB PROCESS_COLLISIONS()
 					case 1   'AMMO
 						if T_PLAYER_LIST( 0 ).pAmmoBelt < MAX_AMMO then
 							Clear_Pickup = true
-							'T_PLAYER_LIST( 0 ).pAmmoBelt += 30
-							'if  T_PLAYER_LIST( 0 ).pAmmoBelt > MAX_AMMO then T_PLAYER_LIST( 0 ).pAmmoBelt = MAX_AMMO
 							iPlaySound( snd_Ammo )
 						end if
 					Case 2   'HEALTH
 						if T_PLAYER_LIST( 0 ).pHealth < MAX_HEALTH then
 							Clear_Pickup = true
-							'T_PLAYER_LIST( 0 ).pHealth += 30
-							'if  T_PLAYER_LIST( 0 ).pHealth > MAX_HEALTH then T_PLAYER_LIST( 0 ).pHealth = MAX_HEALTH
 							iPlaySound( snd_Health )
 						end if  
 					case 3   'ARMOR
 						if T_PLAYER_LIST( 0 ).pArmor < MAX_ARMOR then
 							Clear_Pickup = true
-							'T_PLAYER_LIST( 0 ).pArmor += 30
-							'if  T_PLAYER_LIST( 0 ).pArmor > MAX_ARMOR then T_PLAYER_LIST( 0 ).pArmor = MAX_ARMOR                  
 							iPlaySound( snd_Armor )
 						end if
 				end select
@@ -2747,82 +2651,60 @@ SUB PROCESS_NETWORK()
 						case target_PLAYER, target_PLAYER_HEAD
 							DIM hp AS INTEGER = FIND_PLAYER( HitPid )
 							if hp <> -1 then
-									with T_PLAYER_LIST( hp )
-										if HitPid = T_PLAYER_LIST( 0 ).pid then
-											iPlaySound( snd_HurtM( iRAND(1,2) ) )
-											iFadeColor( 255, 0, 0 )
-											iFadeIn( 500 )
-										else
-											iEmitSound( snd_HurtM( iRAND(1,2) ), .pEnt )
-										end if
-										CREATE_EXPLOSION( destX, destY, destZ, target_PLAYER )
-										' CALCULATE DAMAGES AND REWARDS
-										Dim DamageA as integer = 0
-										Dim DamageH as integer = 0
-										if .pArmor > 0 and iRAND(1,5) > 2 then
-											DamageA = -5
-											.pArmor += DamageA
-											print "ARMOR CALC: "+str( .pArmor )
-										else
-											DamageH = -2 * TargetType	'??
-											.pHealth += DamageH
-											print "HEALTH CALC: "+str( .pHealth )
-										end if
+								with T_PLAYER_LIST( hp )
+									if HitPid = T_PLAYER_LIST( 0 ).pid then
+										iPlaySound( snd_HurtM( iRAND(1,2) ) )
+										iFadeColor( 255, 0, 0 )
+										iFadeIn( 500 )
+									else
+										iEmitSound( snd_HurtM( iRAND(1,2) ), .pEnt )
+									end if
+									CREATE_EXPLOSION( destX, destY, destZ, target_PLAYER )
+									' CALCULATE DAMAGES AND REWARDS
+									Dim DamageA as integer = 0
+									Dim DamageH as integer = 0
+									if .pArmor > 0 and iRAND(1,5) > 2 then
+										DamageA = -5
+										.pArmor += DamageA
+										'print "ARMOR CALC: "+str( .pArmor )
+									else
+										DamageH = -2 * TargetType	'??
+										.pHealth += DamageH
+										'print "HEALTH CALC: "+str( .pHealth )
+									end if
 
-										IF .pArmor < 1 THEN
-											.pArmor = 0
-										END IF
-										IF .pHealth < 1 THEN
-											.pHealth = 0
-											.pDeaths += 1
-											T_PLAYER_LIST( p ).pKills += 1
-											' SEND DEATH
-											print "DEATH SENT..."
-											iRN_SendByte( NET_DEATH )
-											iRN_SendInt( HitPid )
-											iRN_SendInt( pid )
-											iRN_SendInt( .pDeaths )
-											NET_SEND( RN_BROADCAST, RN_IMMEDIATE_PRIORITY, RN_RELIABLE )
-											DEATH( HitPid, pid )
-										end if
-										' SEND DAMAGE
-										print "DAMAGE SENT..."
-										dim Scarr_Stage as integer = 0
-										dim tex_Combined as iTEXTURE
-										select case .pHealth
-											case 90 to 100
-												Scarr_Stage = 0
-											case 70 to 89
-												Scarr_Stage = 1
-											case 50 to 69
-												Scarr_Stage = 2
-											case 30 to 49
-												Scarr_Stage = 3
-											case 0 to 29
-												Scarr_Stage = 4
-										end select
-										print "Scarr_Stage_Sent: "+str( Scarr_Stage )
-										
-										if .pid <> T_PLAYER_LIST( 0 ).pid then
-											tex_Combined = iCopyTexture( tex_FaceMaster )
-											iTextureBlend( tex_Combined, Scarring( Scarr_Stage ), 0, 0, 3 )
-											iEntityTexture( .pHead, tex_Combined, 0 )
-											iEntityTexture( .pBody, Scarring( Scarr_Stage ), 0 )
-										end if
-							
-										iRN_SendByte( NET_DAMAGE )
-										iRN_SendInt( pid )
+									IF .pArmor < 1 THEN
+										.pArmor = 0
+									END IF
+									IF .pHealth < 1 THEN
+										.pHealth = 0
+										.pDeaths += 1
+										T_PLAYER_LIST( p ).pKills += 1
+										' SEND DEATH
+										iRN_SendByte( NET_DEATH )
 										iRN_SendInt( HitPid )
-										iRN_SendInt( T_PLAYER_LIST( p ).pKills )
-										iRN_SendInt( .pArmor )
-										iRN_SendInt( .pHealth )
-										iRN_SendInt( Scarr_Stage )
+										iRN_SendInt( pid )
+										iRN_SendInt( .pDeaths )
 										NET_SEND( RN_BROADCAST, RN_IMMEDIATE_PRIORITY, RN_RELIABLE )
-									end with
-									exit select
-								'end if
-							end if
-							exit select
+										DEATH( HitPid, pid )
+									end if
+									' SEND DAMAGE
+									if .pid <> T_PLAYER_LIST( 0 ).pid then
+										UPDATE_SCARRS( .pid )
+									end if
+						
+									iRN_SendByte( NET_DAMAGE )
+									iRN_SendInt( pid )
+									iRN_SendInt( HitPid )
+									iRN_SendInt( T_PLAYER_LIST( p ).pKills )
+									iRN_SendInt( .pArmor )
+									iRN_SendInt( .pHealth )
+									iRN_SendInt( Scarr_Stage )
+									NET_SEND( RN_BROADCAST, RN_IMMEDIATE_PRIORITY, RN_RELIABLE )
+								end with
+								exit select
+						end if
+						exit select
 						case else
 							CREATE_EXPLOSION( destX, destY, destZ, target_BUILDING )
 					end select
@@ -2835,10 +2717,7 @@ SUB PROCESS_NETWORK()
                   iRN_ForwardMessage()
                   NET_SEND( RN_BROADCAST, RN_IMMEDIATE_PRIORITY, RN_RELIABLE )
 						T_PLAYER_LIST( p ).pState = iRN_GetInt()
-						tex_Combined = iCopyTexture( tex_FaceMaster )
-						iTextureBlend( tex_Combined, Scarring( 0 ), 0, 0, 3 )
-						iEntityTexture( T_PLAYER_LIST( p ).pHead, tex_Combined, 0 )
-						iEntityTexture( T_PLAYER_LIST( p ).pBody, Scarring( 0 ), 0 )
+						UPDATE_SCARRS( T_PLAYER_LIST( p ).pid )
 						iShowEntity( T_PLAYER_LIST( p ).pEnt )
 					end if
 					exit select
@@ -2964,7 +2843,6 @@ SUB PROCESS_NETWORK()
 						
 						case else
 							CREATE_EXPLOSION( destX, destY, destZ, target_BUILDING )
-						
 					end select
 					exit select
 
@@ -2976,11 +2854,9 @@ SUB PROCESS_NETWORK()
 					dim phealth as integer = iRN_GetInt()
                DIM p AS INTEGER = FIND_PLAYER( pid )
                DIM hp AS INTEGER = FIND_PLAYER( hpid )
-
 					if p <> -1 then
 						T_PLAYER_LIST( p ).pKills = Kills
 					end if
-
                if hp <> -1 then
 						With T_PLAYER_LIST( hp )
 							.pArmor = parmor
@@ -2991,15 +2867,9 @@ SUB PROCESS_NETWORK()
 							IF .pArmor < 1 THEN
 								.pArmor = 0
 							end if
-							
 							dim Scarr_Stage as integer = iRN_GetInt()
-							print "Scarr_Stage Received: "+str( Scarr_Stage )
 							if .pid <> T_PLAYER_LIST( 0 ).pid then
-								dim tex_Combined as iTEXTURE
-								tex_Combined = iCopyTexture( tex_FaceMaster )
-								iTextureBlend( tex_Combined, Scarring( Scarr_Stage ), 0, 0, 3 )
-								iEntityTexture( .pHead, tex_Combined, 0 )
-								iEntityTexture( .pBody, Scarring( Scarr_Stage ), 0 )
+								UPDATE_SCARRS( .pid )
 							end if
 						end with
 					end if
@@ -3022,13 +2892,8 @@ SUB PROCESS_NETWORK()
 				case NET_ALIVE			
 					DIM pid AS INTEGER = iRN_GetInt()
 					DIM p AS INTEGER = FIND_PLAYER( pid )
-					dim tex_Combined as iTEXTURE
 					if T_PLAYER_LIST( p ).pid <> T_PLAYER_LIST( 0 ).pid then
-						T_PLAYER_LIST( p ).pState = iRN_GetInt()
-						tex_Combined = iCopyTexture( tex_FaceMaster )
-						iTextureBlend( tex_Combined, Scarring( 0 ), 0, 0, 3 )
-						iEntityTexture( T_PLAYER_LIST( p ).pHead, tex_Combined, 0 )
-						iEntityTexture( T_PLAYER_LIST( p ).pBody, Scarring( 0 ), 0 )
+						UPDATE_SCARRS( T_PLAYER_LIST( p ).pid )
 						iShowEntity( T_PLAYER_LIST( p ).pEnt )
 					end if
 					exit select
@@ -3082,9 +2947,6 @@ function REMOVE_PICKUP( nid as integer, pid as integer ) as boolean
 						if  T_PLAYER_LIST( p ).pArmor > MAX_ARMOR then T_PLAYER_LIST( p ).pArmor = MAX_ARMOR
 					end if
 					exit select
-				
-				
-				
 			end select
 			iFreeAllAnimators( .Ent )
 			iFreeEntity( .Ent )
@@ -3112,8 +2974,8 @@ FUNCTION REMOVE_PLAYER( PlayerID AS INTEGER ) AS Boolean
          .pName = ""
          iFreeSpline( .SplineID )
 			iFreeEntity( .Light )
-			iRemoveEntitySelector( .pHead, .Selector(1) )' = iCreateTriSelector( .pHead )
-			iRemoveEntitySelector( .pBody, .Selector(2) )' = iCreateTriSelector( .pBody )
+			iRemoveEntitySelector( .pHead, .Selector(1) )
+			iRemoveEntitySelector( .pBody, .Selector(2) )
 			iHideEntity( .pEnt )
 			'iHideEntity( .pFeet )
          swap T_PLAYER_LIST( p ), T_PLAYER_LIST( T_PLAYER_TOTAL )
