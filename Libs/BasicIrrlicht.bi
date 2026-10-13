@@ -1214,7 +1214,11 @@ declare function iSoundSourceCount() as UInteger
 /'	DEFINITION:	Count of all sound sources.
 	ARGUMENTS:	None.	
 	RETURNS:	Sound source count. '/
-
+declare sub iUpdateListener()
+/'	DEFINITION:	Updates the listeners position with active camera.
+	ARGUMENTS:	None.	
+	RETURNS:	None. '/
+	
 '----------------------------------------------------------------------------
 '----------------------------------------------------------------------------
 '  bi_Camera.cpp
