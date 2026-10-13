@@ -59,7 +59,7 @@
 Const VSYNC 					= 1				'TRUE OR ONE TO ENABLE VERTICAL SYNC
 Const SHADOWS 					= 1				'TRUE OR ONE TO ENABLE STENCILE SHADOWS
 const TEXTURES_ON				= 1				'TRUE OR ONE TO ENABLE TEXTURING
-const CARTOON_OUTLINE		= 1				'TRUE OR ONE TO OUTLINE AVATAR
+const CARTOON_OUTLINE		= 0				'TRUE OR ONE TO OUTLINE AVATAR
 
 Const SCREENX 					= 1366			'SCREEN WIDTH
 Const SCREENY 					= 768				'SCREEN HEIGHT
@@ -860,6 +860,7 @@ WHILE iRun() AND ( NOT ExitApp )
             .pAmmoBelt = MAX_AMMO
             .pHealth = MAX_HEALTH
             .pArmor = MAX_ARMOR/3
+				
 				iRN_SendByte( NET_ALIVE )
 				iRN_SendInt( .pid )
 				iRN_SendInt( .pState )
@@ -1472,6 +1473,9 @@ SUB CREATE_MODEL( p AS T_PLAYER, shade as Boolean = true )
       .pEnt = iCreatePivot()
       .pHead = iCreateSphere( 32, .pEnt )
       .pBody = iCreateSphere( 16, .pEnt )
+		dim arm as iENTITY = iCreateCylinder( 6, .pEnt )
+		iScaleEntity( arm, 0.2, 0.8, 0.2 )
+		iPositionEntity( arm, -4.4, -9, 0 )
 		iEntityTexture( .pHead, Face )
       iScaleEntity( .pBody, 1, 2, 0.8 )
       iPositionEntity( .pBody, 0, -10, 0 )
@@ -1486,9 +1490,11 @@ SUB CREATE_MODEL( p AS T_PLAYER, shade as Boolean = true )
 		iMoveEntity( .pWeaponEnt(2), 0, -2.8, 0 )
 		iEntityColor( .pWeaponEnt(2), 35, 35, 35 )
 		iEntityColor( .pWeaponEnt(1), 25, 25, 25 )
+		iEntityColor( arm, 25, 25, 25 )
       iEntityMaterialFlag( .phead, EMF_FOG_ENABLE, true )
       iEntityMaterialFlag( .pBody, EMF_FOG_ENABLE, true )
-      iEntityMaterialFlag( .pWeaponEnt(1), EMF_FOG_ENABLE, True )
+      iEntityMaterialFlag( arm, EMF_FOG_ENABLE, true )
+		iEntityMaterialFlag( .pWeaponEnt(1), EMF_FOG_ENABLE, True )
 		iEntityMaterialFlag( .pWeaponEnt(2), EMF_FOG_ENABLE, True )
 		.pFeet = iCreateCube( .pEnt )
 		iEntityTexture( .pFeet, boots )
@@ -2013,9 +2019,11 @@ SUB MAIN_MENU()
       if iMouseDown( MOUSE_RIGHT ) then
          iHidePointer()
 			iRotateEntity( AVATAR_PIVOT, 0, iEntityYaw( AVATAR_PIVOT ) + iMouseXSpeed(), 0 )
+			iRotateEntity( PlatformBase, 0, iEntityYaw( AVATAR_PIVOT ) + iMouseXSpeed(), 0 )
       else
          iShowPointer()
          iTurnEntity( AVATAR_PIVOT, 0, -0.1 * DeltaTime, 0 )
+			iTurnEntity( PlatformBase, 0, -0.1 * DeltaTime, 0 )
       end if
       IF iKeyHit( KEY_F12 ) THEN
          iScreenShot( "Screenshots" )
@@ -2265,7 +2273,7 @@ SUB PLAYER_CONTROLS( BYVAL obj AS iCamera )
          END IF
 		END IF
       ' CHECK MUZZLE FLASH
-      IF iMilliSecs() > .FlashTimer + 100 THEN
+      IF iMilliSecs() > .FlashTimer + 25 THEN
 			'.Pitch += GUN_RECOIL - 1
          iHideEntity( .FlashSprite )
 			iHideEntity( .Light )
@@ -2716,9 +2724,15 @@ SUB PROCESS_NETWORK()
 					if T_PLAYER_LIST( p ).pid <> T_PLAYER_LIST( 0 ).pid then
                   iRN_ForwardMessage()
                   NET_SEND( RN_BROADCAST, RN_IMMEDIATE_PRIORITY, RN_RELIABLE )
-						T_PLAYER_LIST( p ).pState = iRN_GetInt()
-						UPDATE_SCARRS( T_PLAYER_LIST( p ).pid )
-						iShowEntity( T_PLAYER_LIST( p ).pEnt )
+						with T_PLAYER_LIST( p )
+							.pState = iRN_GetInt()
+						   .pCartridge = MAX_AMMO_CARTRIDGE
+							.pAmmoBelt = MAX_AMMO
+							.pHealth = MAX_HEALTH
+							.pArmor = MAX_ARMOR/3
+							UPDATE_SCARRS( .pid )
+							iShowEntity( .pEnt )
+						end with
 					end if
 					exit select
 					
@@ -2893,8 +2907,15 @@ SUB PROCESS_NETWORK()
 					DIM pid AS INTEGER = iRN_GetInt()
 					DIM p AS INTEGER = FIND_PLAYER( pid )
 					if T_PLAYER_LIST( p ).pid <> T_PLAYER_LIST( 0 ).pid then
-						UPDATE_SCARRS( T_PLAYER_LIST( p ).pid )
-						iShowEntity( T_PLAYER_LIST( p ).pEnt )
+						with T_PLAYER_LIST( p )
+							.pState = iRN_GetInt()
+						   .pCartridge = MAX_AMMO_CARTRIDGE
+							.pAmmoBelt = MAX_AMMO
+							.pHealth = MAX_HEALTH
+							.pArmor = MAX_ARMOR/3
+							UPDATE_SCARRS( .pid )
+							iShowEntity( .pEnt )
+						end with
 					end if
 					exit select
 
@@ -3124,7 +3145,7 @@ SUB UPDATE_NET_PLAYERS( dt AS INTEGER )
 				iRotateEntity( .pWeaponPivot, .Pitch, 0, 0 )
 				
 				' HIDE MUZZLE FASH IF EXPIRED
-				IF iMilliSecs() > .FlashTimer + 100 THEN
+				IF iMilliSecs() > .FlashTimer + 25 THEN
 					iHideEntity( .FlashSprite )
 					iHideEntity( .Light )
 				end if
